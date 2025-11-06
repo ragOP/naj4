@@ -381,7 +381,7 @@ export default function Eng() {
 
   const updateToMedicareStep = () => {
     setQuizStep(3);
-    setQuizQuestion("3. Are You Currently Enrolled in Medicare Part A or Part B?");
+    setQuizQuestion("3. Are you on Medicare or Medicaid?");
     smoothScrollToTop(900, 532);
   };
 
@@ -501,10 +501,10 @@ export default function Eng() {
           />
 
           <div className="div10">
-            Eligible Americans are taking advantage of this opportunity to secure their $168  Monthly Allowance, which covers the cost of groceries, rent, bills, and other monthly expenses.
+       Eligible Americans are taking advantage of this opportunity to secure their Spending Allowance, which covers the cost of groceries, rent, bills, and other monthly expenses.
           </div>
           <div className="div10">
-            Use your allowance at your favorite places like Walmart, Target, CVS, and many more. Answer the questions below to check your eligibility now!
+           Use your allowance at your favorite places like Walmart, Target, CVS, and many more. Answer the questions below to check your eligibility now!
           </div>
 
           {/* <div className="arrow-section" title="Scroll for questions">⬇️</div> */}
@@ -557,7 +557,7 @@ export default function Eng() {
       <div className={`div4 ${showCongrats ? "" : "div5"}`} id="congratulations">
         <div className="div19">Congratulations, You Qualify 🎉</div>
         <div className="div20">
-          Make A <span>Quick Call</span> To Claim Your $168  Monthly Allowance!
+          Make A <span>Quick Call</span> Claim Your Spending Allowance Now!
         </div>
         <div className="div21">Spots remaining: 4</div>
         <div className="div99"><h2 style={{ margin: 0 }}>Tap Below To Call Now! 👇</h2></div>
@@ -600,7 +600,7 @@ export default function Eng() {
         determinations or provide coverage, financing, or government benefits directly.
         <br /><br />
         Beware of other fraudulent &amp; similar-looking websites that might look exactly like ours, we have no affiliation with them.
-        This is the only official website to claim your Spending Allowance Benefit with the domain name livebenefitus.com
+        This is the only official website to claim your Spending Allowance Benefit with the domain name myunclaimedbenefits.org
         
       </div>
 
