@@ -5,6 +5,7 @@ import Desktop from "./assets/dis-desktop.png";
 import Mobile from "./assets/dis-mobile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+
 export default function Eng() {
   // ==== GLOBAL SAFETIES ====
   if (typeof window !== "undefined") {
@@ -19,6 +20,11 @@ export default function Eng() {
   const [showCongrats, setShowCongrats] = useState(false);
   const [locked, setLocked] = useState(false); // lock interactions after congrats
 
+  // Program & CTA state
+  const [programType, setProgramType] = useState(null); // 'medicare' | 'aca'
+  const [ctaMode, setCtaMode] = useState("call"); // 'call' | 'link'
+  const [ctaHref, setCtaHref] = useState(""); // used when ctaMode === 'link'
+
   // ====== Counters & misc ======
   const [counter, setCounter] = useState(22563);
   const [claim, setClaim] = useState(72);
@@ -28,9 +34,13 @@ export default function Eng() {
   const [isMobile, setIsMobile] = useState(false);
 
   // ==== CALL NUMBER (dynamic based on selections) ====
-  // default number (same as your current UI)
-  const [telNumber, setTelNumber] = useState("+18337704402");
-  const [displayNumber, setDisplayNumber] = useState("(323) 689-7861");
+  // Phone numbers from your instruction
+  const MEDICARE_TEL = "+18337704402"; // 18337704402
+  const ACA_TEL = "+18336638513";      // 18336638513
+
+  // default number
+  const [telNumber, setTelNumber] = useState(MEDICARE_TEL);
+  const [displayNumber, setDisplayNumber] = useState("(833) 770-4402"); // for MEDICARE_TEL
 
   // Desktop vs mobile logo switch
   useEffect(() => {
@@ -320,8 +330,8 @@ export default function Eng() {
   };
 
   // ====== Ringba queue-only (no external script) ======
-  const RINGBA_AGE_KEY = "age";           // keep your key
-  const RINGBA_MEDICARE_KEY = "ab";       // key for Medicare Part A/B selection
+  const RINGBA_AGE_KEY = "age";     // keep your key
+  const RINGBA_MEDICARE_KEY = "ab"; // key for Medicare Part A/B selection
 
   // Helper to push a tag to Ringba queue with optional newsbreak_cid
   function pushRingbaTag(tagObj) {
@@ -379,15 +389,14 @@ export default function Eng() {
     smoothScrollToTop(900, 432);
   };
 
-  const updateToMedicareStep = () => {
+  const updateToCoverageStep = () => {
     setQuizStep(3);
-    setQuizQuestion("3. Are you on Medicare or Medicaid?");
+    setQuizQuestion("3. Do you have Medicare or Medicaid?");
     smoothScrollToTop(900, 532);
   };
 
   const stepProcess = () => {
     if (locked || hideMain) return;
-    // Show STATUS at the top, hide everything except header
     setShowStatus(true);
     scrollTopNow();
 
@@ -404,7 +413,6 @@ export default function Eng() {
 
   const showCongratulations = () => {
     if (locked) return; // avoid duplicate
-    // Hide status, show CONGRATS at the top, keep header
     setShowStatus(false);
     setShowCongrats(true);
     setLocked(true);
@@ -429,40 +437,56 @@ export default function Eng() {
 
   useEffect(() => () => timerRef.current && clearInterval(timerRef.current), []);
 
-  // ====== Quiz handlers ======
-  // Step 1 (Age) buttons call this and push Ringba age tag
+  // ====== Handlers ======
+
+  // Step 1: Age range
   const handleAgeSelect = (ageValue) => {
     if (locked || hideMain) return;
 
-    // (1) Ringba (lowercase)
     rbAge(ageValue);
 
-    // (2) DYNAMIC CALL NUMBER SWITCH:
-    // when "25-45" is selected, switch to +18336638513
-    if (String(ageValue).toLowerCase() === "25-45") {
-      setTelNumber("+18336638513");
-      setDisplayNumber("(833) 748-0815");
-    } else {
-      // reset to default for other ranges
-      setTelNumber("+18337704402");
+    // Mapping from your instruction:
+    // - If 65+ → Medicare will always come → default numbers to MEDICARE
+    // - Otherwise → ACA number in flow
+    if (String(ageValue).toLowerCase() === "65+") {
+      setProgramType("medicare");
+      setTelNumber(MEDICARE_TEL);
       setDisplayNumber("(833) 770-4402");
+    } else {
+      setProgramType("aca");
+      setTelNumber(ACA_TEL);
+      setDisplayNumber("(833) 663-8513");
     }
 
     updateToCitizenStep();
   };
 
-  // Step 2: Citizen (yes/no)
+  // Step 2: Citizen (yes/no) → proceed to coverage
   const handleCitizen = (answer) => {
     if (locked || hideMain) return;
-    updateToMedicareStep();
+    updateToCoverageStep();
   };
 
-  // Step 3: Medicare (yes/no) → push Ringba 'ab' + proceed
-  const handleMedicare = (answer) => {
+  // Step 3: Coverage (ONLY two options now: Medicare or Medicaid)
+  // If "Medicare" is selected → push rbMedicare('yes') and show LINK CTA (override call)
+  // If "Medicaid" is selected → rbMedicare('no') and show CALL CTA with ACA number
+  const handleCoverage = (selection) => {
     if (locked || hideMain) return;
-    // normalize to lowercase "yes"/"no"
-    const norm = String(answer).toLowerCase() === "yes" ? "yes" : "no";
-    rbMedicare(norm);
+    const sel = String(selection).toLowerCase();
+
+    if (sel === "medicare") {
+      rbMedicare("yes");
+      setProgramType("medicare");
+      setCtaMode("link");
+      setCtaHref("https://uplevelrewarded.com/aff_c?offer_id=1421&aff_id=2065");
+    } else if (sel === "medicaid") {
+      rbMedicare("no");
+      setProgramType("aca");
+      setCtaMode("call");
+      setTelNumber(ACA_TEL);
+      setDisplayNumber("(833) 663-8513");
+    }
+
     stepProcess();
   };
 
@@ -477,7 +501,9 @@ export default function Eng() {
         onClick={() => smoothScrollToTop(1000, 432)}
         style={{ cursor: hideMain ? "default" : "pointer" }}
       >
-        <p style={{ fontSize: "1.4em", margin: 0 }}>Senior's Allowance Program 2025</p>
+        <p style={{ fontSize: "1.4em", margin: 0 }}>
+          Senior's Allowance Program 2025
+        </p>
       </div>
 
       {/* Hero / Quiz — hidden when status OR congrats */}
@@ -491,7 +517,6 @@ export default function Eng() {
             Americans Born Before 1999 May Qualify For A Spending Allowance Under This New Program!
           </div>
 
-          {/* Placeholder image (replace with your asset if needed) */}
           <img
             className="div9"
             src={Card}
@@ -501,18 +526,11 @@ export default function Eng() {
           />
 
           <div className="div10">
-       Eligible Americans are taking advantage of this opportunity to secure their Spending Allowance, which covers the cost of groceries, rent, bills, and other monthly expenses.
+            Eligible Americans are taking advantage of this opportunity to secure their Spending Allowance, which covers the cost of groceries, rent, bills, and other monthly expenses.
           </div>
           <div className="div10">
-           Use your allowance at your favorite places like Walmart, Target, CVS, and many more. Answer the questions below to check your eligibility now!
+            Use your allowance at your favorite places like Walmart, Target, CVS, and many more. Answer the questions below to check your eligibility now!
           </div>
-
-          {/* <div className="arrow-section" title="Scroll for questions">⬇️</div> */}
-           
-
-          {/* <div className="div11">
-            <div className="div12">Answer The Question Below To Proceed:</div>
-          </div> */}
         </div>
 
         <div className="div13">
@@ -538,11 +556,11 @@ export default function Eng() {
             </div>
           )}
 
-          {/* STEP 3: Medicare A/B */}
+          {/* STEP 3: Coverage (ONLY Medicare or Medicaid) */}
           {quizStep === 3 && (
             <div className="div15" id="answerOptions">
-              <div className="div16 glow shimmer" onClick={() => handleMedicare("yes")}>Yes</div>
-              <div className="div16 glow shimmer" onClick={() => handleMedicare("no")}>No</div>
+              <div className="div16 glow shimmer" onClick={() => handleCoverage("medicare")}>Medicare </div>
+              <div className="div16 glow shimmer" onClick={() => handleCoverage("medicaid")}>Medicaid</div>
             </div>
           )}
         </div>
@@ -557,24 +575,40 @@ export default function Eng() {
       <div className={`div4 ${showCongrats ? "" : "div5"}`} id="congratulations">
         <div className="div19">Congratulations, You Qualify 🎉</div>
         <div className="div20">
-          Make A <span>Quick Call</span> Claim Your Spending Allowance Now!
+          {ctaMode === "link" ? (
+            <>A quick verification step is required. <span>Proceed online now</span>!</>
+          ) : (
+            <>Make A <span>Quick Call</span> Claim Your Spending Allowance Now!</>
+          )}
         </div>
         <div className="div21">Spots remaining: 4</div>
-        <div className="div99"><h2 style={{ margin: 0 }}>Tap Below To Call Now! 👇</h2></div>
+        <div className="div99"><h2 style={{ margin: 0 }}>
+          {ctaMode === "link" ? "Tap Below To Continue 👇" : "Tap Below To Call Now! 👇"}
+        </h2></div>
 
-        {/* CTA anchor — active even after locked */}
-        <a
-          href={`tel:${telNumber}`}
-          id="callLink"
-          className="div22 glow shimmer"
-          onPointerDown={fireNbRawCall}
-          onClick={fireNbRawCall}
-        >
-          CALL {displayNumber}
-        </a>
+        {/* CTA: LINK for Medicare selection, CALL for Medicaid (ACA number) */}
+        {ctaMode === "link" ? (
+          <a
+            href={ctaHref}
+            id="proceedLink"
+            className="div22 glow shimmer"
+          >
+            CLICK HERE TO PROCEED
+          </a>
+        ) : (
+          <a
+            href={`tel:${telNumber}`}
+            id="callLink"
+            className="div22 glow shimmer"
+            onPointerDown={fireNbRawCall}
+            onClick={fireNbRawCall}
+          >
+            CALL {displayNumber}
+          </a>
+        )}
 
         <div className="div23">
-          Due to high call volume, your official agent is waiting for only <strong>3 minutes</strong>, then your spot will not be reserved.
+          Due to high volume, your official agent is waiting for only <strong>3 minutes</strong>, then your spot will not be reserved.
         </div>
         <div className="div24" aria-live="polite">
           <div className="div25" id="minutes">{minutes}</div>
@@ -583,11 +617,9 @@ export default function Eng() {
         </div>
       </div>
 
-      
-
       {/* Footer — hidden when status OR congrats */}
       <div className={`div26 ${hideMain ? "div5" : ""}`}>
-      <div className="div27">
+        <div className="div27">
           <a href="/terms.html">Terms &amp; Conditions</a> | <a href="/privacy.html">Privacy Policy</a>
         </div>
         <img
@@ -601,7 +633,6 @@ export default function Eng() {
         <br /><br />
         Beware of other fraudulent &amp; similar-looking websites that might look exactly like ours, we have no affiliation with them.
         This is the only official website to claim your Spending Allowance Benefit with the domain name myunclaimedbenefits.org
-        
       </div>
 
       {/* NB chip (small debug toast) */}
