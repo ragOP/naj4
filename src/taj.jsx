@@ -29,7 +29,7 @@ export default function Eng() {
 
   // ==== CALL NUMBER (dynamic based on selections) ====
   // default number (same as your current UI)
-  const [telNumber, setTelNumber] = useState("+13236897861");
+  const [telNumber, setTelNumber] = useState("+18337704402");
   const [displayNumber, setDisplayNumber] = useState("(323) 689-7861");
 
   // Desktop vs mobile logo switch
@@ -444,8 +444,8 @@ export default function Eng() {
       setDisplayNumber("(833) 748-0815");
     } else {
       // reset to default for other ranges
-      setTelNumber("+13236897861");
-      setDisplayNumber("(323) 689-7861");
+      setTelNumber("+18337704402");
+      setDisplayNumber("(833) 770-4402");
     }
 
     updateToCitizenStep();
