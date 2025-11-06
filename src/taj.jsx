@@ -1,6 +1,8 @@
 // index.jsx
 import React, { useEffect, useRef, useState } from "react";
-import Card from "./assets/card.jpg";
+import Card from "./assets/food2.png";
+import Desktop from "./assets/dis-desktop.png";
+import Mobile from "./assets/dis-mobile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 export default function Eng() {
@@ -589,7 +591,7 @@ export default function Eng() {
           <a href="/terms.html">Terms &amp; Conditions</a> | <a href="/privacy.html">Privacy Policy</a>
         </div>
         <img
-          src={isMobile ? "./dis-mobile.png" : "./dis-desktop.png"}
+          src={isMobile ? Mobile : Desktop}
           alt="Logo"
           style={{ width: "auto", marginBottom: "0.5em" }}
         />
