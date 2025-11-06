@@ -438,8 +438,8 @@ export default function Eng() {
     rbAge(ageValue);
 
     // (2) DYNAMIC CALL NUMBER SWITCH:
-    // when "Under 64" is selected, switch to +18336638513
-    if (String(ageValue).toLowerCase() === "under 64") {
+    // when "25-45" is selected, switch to +18336638513
+    if (String(ageValue).toLowerCase() === "25-45") {
       setTelNumber("+18336638513");
       setDisplayNumber("(833) 748-0815");
     } else {
@@ -523,10 +523,10 @@ export default function Eng() {
           {/* STEP 1: Age range */}
           {quizStep === 1 && (
             <div className="div15" id="answerOptions">
-              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("Under 64")}>Under 64</div>
-              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("64-69")}>64-69</div>
-              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("70-74")}>70-74</div>
-              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("75+")}>75+</div>
+              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("25-45")}>25-45</div>
+              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("45-65")}>45-65</div>
+              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("65+")}>65+</div>
+              <div className="div16 glow shimmer" onClick={() => handleAgeSelect("Under 25")}>Under 25</div>
             </div>
           )}
 
