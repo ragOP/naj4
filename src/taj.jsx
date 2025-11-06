@@ -488,7 +488,7 @@ export default function Eng() {
             onClick={() => smoothScrollToTop(1000, 432)}
             style={{ cursor: hideMain ? "default" : "pointer" }}
           >
-            Seniors On Medicare May Qualify For Additional $168 /Month Under This New Program!
+            Americans Born Before 1999 May Qualify For A Spending Allowance Under This New Program!
           </div>
 
           {/* Placeholder image (replace with your asset if needed) */}
